@@ -32,6 +32,7 @@ public class SecurityConfig {
                 authorize
                     .requestMatchers("/h2-console/**").permitAll() // autorise H2
                     .anyRequest().permitAll())
+                    .headers(headers -> headers.frameOptions().disable()) // permet iframe H2
             .sessionManagement(httpSecuritySessionManagementConfigurer ->
                                         httpSecuritySessionManagementConfigurer.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
