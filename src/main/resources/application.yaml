@@ -14,7 +14,9 @@ spring:
 
   security:
     enabled: false
+    
   datasource:
+    
     url: jdbc:postgresql://localhost:5432/stockdb
     username: ${DB_USER}
     password: ${DB_PASS}
@@ -29,7 +31,6 @@ spring:
   sql:
     init:
       mode: never
-
   
 jwt:
   key: ${JWT_KEY}
