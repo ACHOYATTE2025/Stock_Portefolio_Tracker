@@ -1,0 +1,92 @@
+package com.CSE310.Stock_Portefolio_Tracker.Services;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+
+import com.CSE310.Stock_Portefolio_Tracker.Dto.ResponseDto;
+import com.CSE310.Stock_Portefolio_Tracker.Dto.SignupRequestDto;
+import com.CSE310.Stock_Portefolio_Tracker.Entities.Role;
+import com.CSE310.Stock_Portefolio_Tracker.Entities.Userx;
+import com.CSE310.Stock_Portefolio_Tracker.Enum.TypeRole;
+import com.CSE310.Stock_Portefolio_Tracker.Repository.RoleRepository;
+import com.CSE310.Stock_Portefolio_Tracker.Repository.UserxRepository;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
+
+@Service
+@RequiredArgsConstructor
+@Slf4j
+public class AuthService implements  UserDetailsService{
+
+    private final UserxRepository userxRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final RoleRepository roleRepository;
+
+    public ResponseEntity<ResponseDto> RegisterUserService(SignupRequestDto request) {
+        
+
+        validateEmail(request.getEmail());
+        checkUserAlreadyExists(request.getEmail());
+
+        Userx user = buildUser(request);
+       
+        userxRepository.save(user);
+
+        log.info("User successfully created with email: {}", user.getEmail());
+
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(new ResponseDto(201, "USER CREATED SUCCESSFULLY"));
+    }
+
+    // ===================== PRIVATE METHODS =====================
+
+    private void checkUserAlreadyExists(String email) {
+        if (userxRepository.existsByEmail(email)) {
+            throw new RuntimeException("User exist already");
+        }
+    }
+
+    private void validateEmail(String email) {
+        if (email == null || !email.contains("@") || !email.contains(".")) {
+            throw new IllegalArgumentException("EMAIL NOT VALID");
+        }
+    }
+
+    
+
+    
+     
+
+    private Userx buildUser(SignupRequestDto request) {
+        
+
+      // 🔥 Récupérer le rôle EXISTANT (ne jamais le créer ici)
+        Role role = roleRepository.findByLibele(TypeRole.USER)
+                .orElseThrow(() -> new RuntimeException("ROLE USER NOT FOUND"));
+
+        return Userx.builder()
+                .username(request.getUsername())
+                .email(request.getEmail())
+                .password(passwordEncoder.encode(request.getPassword()))
+                .role(role)
+                .active(true)
+                .build();
+    }
+
+
+    
+    @Override
+    public UserDetails loadUserByUsername(String email) {
+        return userxRepository.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("Utilisateur non trouvé : " + email));
+    }
+
+}

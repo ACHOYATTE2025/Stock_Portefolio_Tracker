@@ -11,7 +11,7 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 public class MdpConfig {
 
-     @Bean
+  @Bean
   public PasswordEncoder passwordEncoder(){
     return  new BCryptPasswordEncoder();
 
