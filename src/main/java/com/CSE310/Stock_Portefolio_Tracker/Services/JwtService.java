@@ -4,6 +4,7 @@ import java.time.Instant;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.function.Function;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -26,10 +27,12 @@ import com.CSE310.Stock_Portefolio_Tracker.Repository.UserxRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 @Slf4j
 public class JwtService {
@@ -37,32 +40,44 @@ public class JwtService {
     private final UserxRepository userxRepository;
     private final JwtRepository jwtRepository;
     private final RefreshTokenRepository refreshTokenRepository;
-    RefreshToken refreshToken;
+   
 
 
 
     public SignupResponseDto generateAndSaveToken(Userx userx) {
+           log.info("Generating new JWT and RefreshToken for user: {}", userx.getEmail());
         // désactiver anciens tokens
         disableToken(userx);
 
         // générer nouveau JWT
         String jwtBearer = this.generateToken(userx);
         
-
+          // Create refresh token
+        RefreshToken refreshToken = RefreshToken.builder()
+                .valeur(UUID.randomUUID().toString())
+                .expire(false)
+                .creation(Instant.now())
+                .expiration(Instant.now().plusMillis(36000000))
+                .build();
+            refreshTokenRepository.save(refreshToken);
 
         // save en DB
         Jwt jwtbuild = Jwt.builder()
                 .valeur(jwtBearer)
                 .desactive(false)
                 .expiration(false)
+                .refreshToken(refreshToken)
                 .userx(userx)
                 .build();
 
         jwtRepository.save(jwtbuild);
+        log.info("JWT and RefreshToken saved for user {}", userx.getEmail());
 
         return new SignupResponseDto(jwtBearer, refreshToken.getValeur());
     }
 
+
+   
     public void disableToken(Userx userx) {
         List<Jwt> jwtList = jwtRepository.findByUserx(userx.getEmail())
                 .peek(jwt -> {

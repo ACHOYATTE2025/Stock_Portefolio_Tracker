@@ -12,6 +12,7 @@ import com.CSE310.Stock_Portefolio_Tracker.Dto.ErroResponseDto;
 import com.CSE310.Stock_Portefolio_Tracker.Dto.LoginRequestDto;
 import com.CSE310.Stock_Portefolio_Tracker.Dto.ResponseDto;
 import com.CSE310.Stock_Portefolio_Tracker.Dto.SignupRequestDto;
+import com.CSE310.Stock_Portefolio_Tracker.Dto.SignupResponseDto;
 import com.CSE310.Stock_Portefolio_Tracker.Entities.Userx;
 import com.CSE310.Stock_Portefolio_Tracker.Services.AuthService;
 import com.CSE310.Stock_Portefolio_Tracker.Services.JwtService;
@@ -50,7 +51,7 @@ private final JwtService jwtService;
     responseCode="201",
     description = "HTTP Status CREATED"
   )
-  @PostMapping("/registerUser")
+  @PostMapping("/register")
   public ResponseEntity<ResponseDto> registerUser( @RequestBody @Valid SignupRequestDto request)throws Exception {
         return (ResponseEntity<ResponseDto>) this.authService.RegisterUserService(request);
        
@@ -81,18 +82,29 @@ private final JwtService jwtService;
     }
   )
 @PostMapping("/login")
- public ResponseEntity<String> login( @RequestBody LoginRequestDto request) {
+ public ResponseEntity<SignupResponseDto> login( @RequestBody LoginRequestDto request) {
 
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
-                        request.getEmail(),
+                        request.getUsername(),
                         request.getPassword()
                 )
         );
 
-        String token = jwtService.generateToken((Userx) authentication);
+        if(authentication.isAuthenticated()){
+          // ⚠️ récupération correcte du principal
+          Userx user = (Userx) authentication.getPrincipal();
+          SignupResponseDto tokens = jwtService.generateAndSaveToken(user);
 
-        return ResponseEntity.ok(token);
+          return ResponseEntity.ok(tokens);
+        }
+
+        return null;
+       
+
+      
+
+        
     }
 }
 

@@ -23,7 +23,7 @@ public interface JwtRepository  extends  CrudRepository<Jwt, Long>{
     Optional <Jwt> findBytoken(String email, Boolean desactive,Boolean expire);
 
     @Query("FROM Jwt j WHERE  j.userx.email=:email")
-    Stream <Jwt> findByUserx(String email);
+    Stream <Jwt>  findByUserx(String email);
 
     @Query("FROM Jwt j WHERE  j.refreshToken.valeur=:valeur")
     Optional <Jwt> findByRefreshToken(String valeur);

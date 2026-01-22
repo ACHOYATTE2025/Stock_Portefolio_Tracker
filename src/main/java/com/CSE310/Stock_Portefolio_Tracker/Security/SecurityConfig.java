@@ -34,7 +34,8 @@ public class SecurityConfig {
                 authorize
                     .requestMatchers("/h2-console/**").permitAll() // autorise H2
                     .requestMatchers("/v3/**", "/swagger-ui/**").permitAll()//permettre l'affichage de swagger
-                    .requestMatchers(HttpMethod.POST,"/registerUser").permitAll()
+                    .requestMatchers(HttpMethod.POST,"/register").permitAll()
+                     .requestMatchers(HttpMethod.POST,"/login").permitAll()
                     .anyRequest().authenticated())
                     .headers(headers -> headers.frameOptions().disable()) // permet iframe H2
             .sessionManagement(httpSecuritySessionManagementConfigurer ->
