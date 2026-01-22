@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.CSE310.Stock_Portefolio_Tracker.Dto.ErroResponseDto;
 import com.CSE310.Stock_Portefolio_Tracker.Dto.LoginRequestDto;
+import com.CSE310.Stock_Portefolio_Tracker.Dto.RefreshTokenDto;
 import com.CSE310.Stock_Portefolio_Tracker.Dto.ResponseDto;
 import com.CSE310.Stock_Portefolio_Tracker.Dto.SignupRequestDto;
 import com.CSE310.Stock_Portefolio_Tracker.Dto.SignupResponseDto;
@@ -27,7 +28,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @Tag(
-  name = "Stock tracker management",
+  name = "Stock Tracker Authentification",
   description="AUTHENTIFICATION REST Api in Stock tracker management APP to CREATE  details"
 )
 @RequiredArgsConstructor
@@ -100,12 +101,25 @@ private final JwtService jwtService;
         }
 
         return null;
-       
-
-      
-
-        
+               
     }
+
+
+
+
+    
+
+//refresh Token
+@Operation(
+    summary="REST API to make refreshtoken  into stock portefolio tracker app",
+    description = "REST API to make refreshtoken   into stock portefolio tracker app"
+  )
+//@PreAuthorize("hasAnyRole('USER')")
+  @PostMapping("/refreshtoken")
+  public  SignupResponseDto refreshToken(@RequestBody RefreshTokenDto refreshTokenRequest) {
+       return this.jwtService.refreshtoken(refreshTokenRequest);
+       }
+
 }
 
 

@@ -3,7 +3,7 @@ package com.CSE310.Stock_Portefolio_Tracker.Dto;
 import lombok.Data;
 
 @Data
-public class RenewTokenRequestDto {
+public class RefreshTokenDto {
     private String code;
 
 }

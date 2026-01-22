@@ -1,4 +1,4 @@
-package com.CSE310.Stock_Portefolio_Tracker.Security;
+package com.CSE310.Stock_Portefolio_Tracker.Config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;

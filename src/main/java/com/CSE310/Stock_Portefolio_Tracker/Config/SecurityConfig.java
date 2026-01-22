@@ -1,4 +1,4 @@
-package com.CSE310.Stock_Portefolio_Tracker.Security;
+package com.CSE310.Stock_Portefolio_Tracker.Config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -35,7 +35,8 @@ public class SecurityConfig {
                     .requestMatchers("/h2-console/**").permitAll() // autorise H2
                     .requestMatchers("/v3/**", "/swagger-ui/**").permitAll()//permettre l'affichage de swagger
                     .requestMatchers(HttpMethod.POST,"/register").permitAll()
-                     .requestMatchers(HttpMethod.POST,"/login").permitAll()
+                    .requestMatchers(HttpMethod.POST,"/login").permitAll()
+                    .requestMatchers(HttpMethod.POST,"/refreshtoken").permitAll()
                     .anyRequest().authenticated())
                     .headers(headers -> headers.frameOptions().disable()) // permet iframe H2
             .sessionManagement(httpSecuritySessionManagementConfigurer ->

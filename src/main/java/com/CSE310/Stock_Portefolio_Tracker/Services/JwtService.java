@@ -14,7 +14,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import com.CSE310.Stock_Portefolio_Tracker.Dto.RenewTokenRequestDto;
+import com.CSE310.Stock_Portefolio_Tracker.Dto.RefreshTokenDto;
 import com.CSE310.Stock_Portefolio_Tracker.Dto.ResponseDto;
 import com.CSE310.Stock_Portefolio_Tracker.Dto.SignupResponseDto;
 import com.CSE310.Stock_Portefolio_Tracker.Entities.Jwt;
@@ -100,14 +100,14 @@ public class JwtService {
     
 
     //production de refresh Token
-     public SignupResponseDto refreshtoken(RenewTokenRequestDto refreshTokenRequest) {
-        final Jwt jwt= this.jwtRepository.findByRefreshToken(refreshTokenRequest.getCode())
+     public SignupResponseDto refreshtoken(RefreshTokenDto refreshTokenDto) {
+        final Jwt jwt= this.jwtRepository.findByRefreshToken(refreshTokenDto.getCode())
         .orElseThrow(()-> new RuntimeException("REFRESH-TOKEN Invalid"));
 
         if(jwt.getRefreshToken().isExpire() || jwt.getRefreshToken().getExpiration().isBefore(Instant.now()))
         { throw new RuntimeException("REFRESH-TOKEN EXPIRED "); };
 
-        RefreshToken refresh= this.refreshTokenRepository.findByValeur(refreshTokenRequest.getCode())
+        RefreshToken refresh= this.refreshTokenRepository.findByValeur(refreshTokenDto.getCode())
         .orElseThrow(()-> new RuntimeException("REFRESH-TOKEN INCONU"));
         
         SignupResponseDto tokens=  this.generateAndSaveToken(jwt.getUserx());
