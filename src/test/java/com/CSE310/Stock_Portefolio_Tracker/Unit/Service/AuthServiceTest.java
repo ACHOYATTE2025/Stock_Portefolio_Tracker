@@ -1,6 +1,6 @@
 package com.CSE310.Stock_Portefolio_Tracker.Unit.Service;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 
 import java.util.Optional;
 
@@ -10,10 +10,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import com.CSE310.Stock_Portefolio_Tracker.Dto.ResponseDto;
+
 import com.CSE310.Stock_Portefolio_Tracker.Dto.SignupRequestDto;
 import com.CSE310.Stock_Portefolio_Tracker.Entities.Role;
 import com.CSE310.Stock_Portefolio_Tracker.Entities.Userx;
@@ -57,11 +56,14 @@ public class AuthServiceTest {
         Mockito.when(passwordEncoder.encode("acho")).thenReturn("encodedPassword");
 
         // when
-        ResponseEntity<ResponseDto> saved = authService.RegisterUserService(user);
+                            authService.RegisterUserService(user);
 
         // then
-        assertNotNull(saved);
-        assert(saved.getBody().getStatusMsg().contains("USER CREATED SUCCESSFULLY"));
-    
-}
+        // Vérifier que le repository a bien été appelé
+        Mockito.verify(userRepository, Mockito.times(1)).save(Mockito.any(Userx.class));    
+       }
+
+
+
+      
 }

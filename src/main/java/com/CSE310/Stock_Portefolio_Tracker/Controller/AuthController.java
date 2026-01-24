@@ -1,9 +1,12 @@
 package com.CSE310.Stock_Portefolio_Tracker.Controller;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -50,11 +53,17 @@ private final JwtService jwtService;
 
   @ApiResponse(
     responseCode="201",
-    description = "HTTP Status CREATED"
+    description = "USER CREATED SUCCESSFULLY"
   )
-  @PostMapping("/register")
+  @PostMapping(value="/register",
+              produces = MediaType.APPLICATION_JSON_VALUE
+            )
   public ResponseEntity<ResponseDto> registerUser( @RequestBody @Valid SignupRequestDto request)throws Exception {
-        return (ResponseEntity<ResponseDto>) this.authService.RegisterUserService(request);
+         this.authService.RegisterUserService(request);
+         return ResponseEntity
+            .status(HttpStatus.CREATED)
+            .contentType(MediaType.APPLICATION_JSON)
+            .body(new ResponseDto(201,"USER CREATED SUCCESSFULLY",""));
        
   }
 
@@ -83,25 +92,32 @@ private final JwtService jwtService;
     }
   )
 @PostMapping("/login")
- public ResponseEntity<SignupResponseDto> login( @RequestBody LoginRequestDto request) {
+ public ResponseEntity<?> login( @RequestBody LoginRequestDto request) {
 
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        request.getUsername(),
-                        request.getPassword()
-                )
+         try {
+              Authentication authentication = authenticationManager.authenticate(
+                  new UsernamePasswordAuthenticationToken(
+                      request.getUsername(),
+                      request.getPassword()
+                  )
         );
 
-        if(authentication.isAuthenticated()){
-          // ⚠️ récupération correcte du principal
-          Userx user = (Userx) authentication.getPrincipal();
-          SignupResponseDto tokens = jwtService.generateAndSaveToken(user);
+              Userx user = (Userx) authentication.getPrincipal();
+              SignupResponseDto tokens = jwtService.generateAndSaveToken(user);
 
-          return ResponseEntity.ok(tokens);
-        }
+              return ResponseEntity
+                  .ok()
+                  .contentType(MediaType.APPLICATION_JSON)
+                  .body(tokens);
 
-        return null;
-               
+    } catch (AuthenticationException ex) {
+
+        return ResponseEntity
+            .status(HttpStatus.UNAUTHORIZED)
+            .contentType(MediaType.APPLICATION_JSON)
+            .body(new ResponseDto(401, "LOGIN ERROR", "BAD CREDENTIALS"));
+    }
+                
     }
 
 

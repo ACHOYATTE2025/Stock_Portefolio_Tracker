@@ -3,6 +3,7 @@ package com.CSE310.Stock_Portefolio_Tracker.Config;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -16,6 +17,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 
 @Configuration
@@ -29,18 +31,24 @@ public class SecurityConfig {
     public SecurityFilterChain FilterChain (HttpSecurity httpSecurity) throws Exception{
 
         return httpSecurity
-            .csrf(AbstractHttpConfigurer::disable)
-            .authorizeHttpRequests(authorize->
-                authorize
-                    .requestMatchers("/h2-console/**").permitAll() // autorise H2
-                    .requestMatchers("/v3/**", "/swagger-ui/**").permitAll()//permettre l'affichage de swagger
-                    .requestMatchers(HttpMethod.POST,"/register").permitAll()
-                    .requestMatchers(HttpMethod.POST,"/login").permitAll()
-                    .requestMatchers(HttpMethod.POST,"/refreshtoken").permitAll()
-                    .anyRequest().authenticated())
-                    .headers(headers -> headers.frameOptions().disable()) // permet iframe H2
-            .sessionManagement(httpSecuritySessionManagementConfigurer ->
-                                        httpSecuritySessionManagementConfigurer.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .csrf(csrf -> csrf.disable())
+        .exceptionHandling(ex -> ex
+            .authenticationEntryPoint((req, res, e) -> {
+                res.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                res.setContentType(MediaType.APPLICATION_JSON_VALUE);
+                res.getWriter().write(
+                    "{\"status\":401,\"message\":\"UNAUTHORIZED\",\"error\":\"BAD CREDENTIALS\"}"
+                );
+            })
+        )
+        .authorizeHttpRequests(auth -> auth
+            .requestMatchers("/api/stockportefoliotracker/v1/login",
+                             "/api/stockportefoliotracker/v1/register"
+                             ).permitAll()
+            .anyRequest().authenticated()
+        )
+        .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+        )
 
             .build();
     }

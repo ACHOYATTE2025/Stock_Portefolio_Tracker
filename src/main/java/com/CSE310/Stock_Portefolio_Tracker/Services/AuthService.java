@@ -1,14 +1,11 @@
 package com.CSE310.Stock_Portefolio_Tracker.Services;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.CSE310.Stock_Portefolio_Tracker.Dto.ResponseDto;
 import com.CSE310.Stock_Portefolio_Tracker.Dto.SignupRequestDto;
 import com.CSE310.Stock_Portefolio_Tracker.Entities.Role;
 import com.CSE310.Stock_Portefolio_Tracker.Entities.Userx;
@@ -29,7 +26,7 @@ public class AuthService implements  UserDetailsService{
     private final PasswordEncoder passwordEncoder;
     private final RoleRepository roleRepository;
 
-    public ResponseEntity<ResponseDto> RegisterUserService(SignupRequestDto request) {
+    public void RegisterUserService(SignupRequestDto request) {
         
 
         validateEmail(request.getEmail());
@@ -37,13 +34,11 @@ public class AuthService implements  UserDetailsService{
 
         Userx user = buildUser(request);
        
-        userxRepository.save(user);
+        this.userxRepository.save(user);
 
         log.info("User successfully created with email: {}", user.getEmail());
 
-        return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body(new ResponseDto(201, "USER CREATED SUCCESSFULLY"));
+        
     }
 
     // ===================== PRIVATE METHODS =====================

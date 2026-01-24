@@ -133,22 +133,22 @@ public class JwtService {
 
                 return ResponseEntity
                         .status(HttpStatus.OK)
-                        .body(new ResponseDto(200, user.getUsername() + " EST DECONNECTE"));
+                        .body(new ResponseDto(200, user.getUsername() + " EST DECONNECTE",""));
             } else {
                 return ResponseEntity
                         .status(HttpStatus.BAD_REQUEST)
-                        .body(new ResponseDto(401, user.getUsername() + " EST DEJA DECONNECTE"));
+                        .body(new ResponseDto(401, user.getUsername() + " EST DEJA DECONNECTE",""));
             }
         } else {
             return ResponseEntity
                     .status(HttpStatus.NOT_FOUND)
-                    .body(new ResponseDto(404, "JWT introuvable pour l'utilisateur"));
+                    .body(new ResponseDto(404, "JWT introuvable pour l'utilisateur",""));
         }
     } catch (Exception e) {
         log.error("Erreur lors de la déconnexion : {}", e.getMessage());
         return ResponseEntity
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(new ResponseDto(500, e.getMessage()));
+                .body(new ResponseDto(500, e.getMessage(),""));
     }
 }
 
