@@ -16,6 +16,9 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+
+import com.CSE310.Stock_Portefolio_Tracker.Security.JwtAuthentificationFilter;
 
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +29,7 @@ import lombok.RequiredArgsConstructor;
 @EnableMethodSecurity
 public class SecurityConfig {
     private final PasswordEncoder passwordEncoder;
+    private final JwtAuthentificationFilter jwtAuthenticationFilter;
 
     @Bean
     public SecurityFilterChain FilterChain (HttpSecurity httpSecurity) throws Exception{
@@ -42,15 +46,22 @@ public class SecurityConfig {
             })
         )
         .authorizeHttpRequests(auth -> auth
-            .requestMatchers("/api/stockportefoliotracker/v1/login",
-                             "/api/stockportefoliotracker/v1/register"
+            .requestMatchers("/login",
+                             "/register",
+                            "/v3/**", "/swagger-ui/**"//permettre l'affichage de swagger
+                           
                              ).permitAll()
             .anyRequest().authenticated()
         )
         .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
         )
 
-            .build();
+        .addFilterBefore(
+            jwtAuthenticationFilter,
+            UsernamePasswordAuthenticationFilter.class
+        )
+
+        .build();
     }
 
     

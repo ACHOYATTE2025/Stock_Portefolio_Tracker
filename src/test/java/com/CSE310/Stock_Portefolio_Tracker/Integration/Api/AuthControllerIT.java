@@ -11,6 +11,8 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 
 import com.CSE310.Stock_Portefolio_Tracker.Dto.LoginRequestDto;
+import com.CSE310.Stock_Portefolio_Tracker.Dto.RefreshTokenDto;
+import com.CSE310.Stock_Portefolio_Tracker.Dto.SignupResponseDto;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.equalTo;
@@ -18,6 +20,9 @@ import static org.hamcrest.Matchers.equalTo;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import static org.hamcrest.Matchers.notNullValue;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
+import java.util.Map;
 
 
 
@@ -71,8 +76,8 @@ public class AuthControllerIT {
     void should_login_successfully() {
 
         LoginRequestDto request = new LoginRequestDto();
-        request.setUsername("yatte@gmail.com");
-        request.setPassword("yatte");
+        request.setUsername("acho@gmail.com");
+        request.setPassword("acho");
 
         given()
             .contentType(ContentType.JSON)
@@ -91,7 +96,7 @@ public class AuthControllerIT {
         void should_fail_login_with_invalid_credentials() {
 
             LoginRequestDto request = new LoginRequestDto();
-            request.setUsername("yatte@gmail.com"); // utilisateur qui n'existe pas
+            request.setUsername("yattex@gmail.com"); // utilisateur qui n'existe pas
             request.setPassword("yattex");           // mot de passe invalide
 
             given()
@@ -99,7 +104,7 @@ public class AuthControllerIT {
                 .body(request)
                 .log().all()
             .when()
-                .post("/login")
+                .post("/api/stockportefoliotracker/v1/login")
             .then()
                 .log().all()
                 .statusCode(401) // on attend 401 pour login échoué
@@ -109,5 +114,35 @@ public class AuthControllerIT {
                 .body("error", equalTo("BAD CREDENTIALS"));
         }
         
+
+
+
+       @Test
+        void should_login_and_refresh_token_successfully() {
+            // 1️⃣ Login pour obtenir token et refreshToken
+            LoginRequestDto loginRequest = new LoginRequestDto();
+            loginRequest.setUsername("acho@gmail.com");
+            loginRequest.setPassword("acho");
+
+            SignupResponseDto loginTokens = given()
+                    .contentType(ContentType.JSON)
+                    .body(loginRequest)
+                    .log().all()
+                .when()
+                    .post("/login")
+                .then()
+                    .log().all()
+                    .extract()
+                    .as(SignupResponseDto.class);
+                   
+                    // Vérification des tokens reçus
+                    assertNotNull(loginTokens.getToken(), "Access token should not be null");
+                    assertNotNull(loginTokens.getRefresh(), "Refresh token should not be null");
+                    
+                
+
+           
+        }
+
 
 }

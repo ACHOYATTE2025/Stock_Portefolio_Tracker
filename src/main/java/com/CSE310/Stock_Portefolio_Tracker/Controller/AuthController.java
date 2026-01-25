@@ -130,7 +130,7 @@ private final JwtService jwtService;
     summary="REST API to make refreshtoken  into stock portefolio tracker app",
     description = "REST API to make refreshtoken   into stock portefolio tracker app"
   )
-//@PreAuthorize("hasAnyRole('USER')")
+//@PreAuthorize("hasAnyRole('USER,ADMIN')")
   @PostMapping("/refreshtoken")
   public  SignupResponseDto refreshToken(@RequestBody RefreshTokenDto refreshTokenRequest) {
        return this.jwtService.refreshtoken(refreshTokenRequest);
