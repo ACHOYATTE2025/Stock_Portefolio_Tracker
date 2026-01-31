@@ -45,6 +45,12 @@ management:
     health:
       show-details: always
 
+stock:
+  api:
+    base-url: https://www.alphavantage.co
+    api-key: ${ALPHA_VINTAGE}
+
+
 info:
   app:
     name: Stock_Portefolio_Tracker
