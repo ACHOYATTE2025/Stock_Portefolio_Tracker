@@ -48,6 +48,7 @@ public class SecurityConfig {
         .authorizeHttpRequests(auth -> auth
             .requestMatchers("/login",
                              "/register",
+                             "/refreshtoken",
                             "/v3/**", "/swagger-ui/**"//permettre l'affichage de swagger
                            
                              ).permitAll()

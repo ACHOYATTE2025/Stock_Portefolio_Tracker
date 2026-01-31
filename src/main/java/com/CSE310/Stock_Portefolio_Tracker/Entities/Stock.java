@@ -1,41 +1,38 @@
 package com.CSE310.Stock_Portefolio_Tracker.Entities;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @Entity
+@Data
+@AllArgsConstructor
 @Table(name="stock")
 public class Stock {
-    @Id
+     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String symbol;  // ex: AAPL, TSLA
-    private String _stock;
-    private double price;
+    @Column(unique = true, nullable = false)
+    private String symbol;   // AAPL, TSLA
 
-    // Relation avec Holding
-    @OneToMany(mappedBy = "stock", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Holding> holdings;
+    private String name;     // Apple Inc.
+    private String exchange; // NASDAQ
 
-    // Relation avec Transaction
-    @OneToMany(mappedBy = "stock", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Transactions> transactions;
+    @Transient
+    private BigDecimal currentPrice; // venant de l’API Alpha Vantage
 
-    // Relation avec Recommendation
-    @OneToMany(mappedBy = "stock", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Recommendation> recommendations;
-
-    public Stock() {
-    }
 
 
 }
