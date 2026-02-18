@@ -2,11 +2,14 @@ package com.CSE310.Stock_Portefolio_Tracker.Controller;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,26 +20,28 @@ import org.springframework.web.bind.annotation.RestController;
 import com.CSE310.Stock_Portefolio_Tracker.Dto.GlobalQuoteResponse;
 import com.CSE310.Stock_Portefolio_Tracker.Dto.PortfolioResponse;
 import com.CSE310.Stock_Portefolio_Tracker.Dto.ResponseDto;
-import com.CSE310.Stock_Portefolio_Tracker.Entities.Portefolio;
 import com.CSE310.Stock_Portefolio_Tracker.Entities.Userx;
-import com.CSE310.Stock_Portefolio_Tracker.Services.PortfolioService;
+import com.CSE310.Stock_Portefolio_Tracker.Services.PortefolioService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @RequestMapping("/stocks")
 @AllArgsConstructor
+@Slf4j
 
 @Tag(
-  name = "Stock Controller",
+  name = "Stock & PortFolio Controller",
   description="STOCK CONTROLLER  Api in Stock tracker management APP to get  details"
 )
-public class StockController {
+public class StockPortFolioController {
 
-    private final PortfolioService portfolioService;
+    private final PortefolioService portfolioService;
 
 
 
@@ -80,9 +85,9 @@ public class StockController {
 
 
         @PostMapping("/createPortefolio")
-        public ResponseEntity<ResponseDto> createPortfolio(@RequestParam String email, @RequestParam String porteFolioName) {
+        public ResponseEntity<ResponseDto> createPortfolio(@RequestParam String email, @RequestParam String porteFolioName,double amount) {
 
-             portfolioService.createPortfolio(email,porteFolioName);
+             portfolioService.createPortfolio(email,porteFolioName,amount);
 
              return ResponseEntity
                     .status(HttpStatus.CREATED)
@@ -91,11 +96,57 @@ public class StockController {
        
 
     }
+        
+    //Get folio by name or all folio
+    @Operation(
+        summary="REST API to get portefolio by name or all portefolio P",
+        description = "REST API to get portfolio inside Stock Portefolio App "
+      )
+     @ApiResponse(
+      responseCode="200",
+      description = "VALUE DONE"
+  )
+    @GetMapping(path="/getPortfolio")
+    public List<PortfolioResponse>  getMyPortfolio(@RequestParam(required = false)  String num){
 
-    //Get All portefolio of User
-     @GetMapping("/api/portfolio")
-    public List<PortfolioResponse> getMyPortfolios(@AuthenticationPrincipal Userx user) {
-        return portfolioService.getPortfoliosForUser(user);
+        List<PortfolioResponse> readix = this.portfolioService.getPortfolio(num);
+        log.info("certificate fetch N° "+ readix);
+        return readix;
     }
+
+
+
+
+    //get a portefolio by ID
+    @Operation(
+        summary="REST API to get portfolio by ID",
+        description = "REST API to get Portfolio y id inside Stock portfolio App "
+      )
+      @ApiResponse(
+      responseCode="200",
+      description = "VALUE DONE"
+  )
+    @GetMapping(path="/getPortefolio/{id}")
+    Optional<PortfolioResponse> GetPortfolioById(@Valid @RequestParam(required = true)Long id ){
+      Optional<PortfolioResponse> bix = this.portfolioService.getBirthById(id);
+      log.info("Portofolio fetch by id N° "+ bix);
+      return bix;
+    }
+
+
+    
+
+  //suprimmer un certifcat de naissance
+  @Operation(
+      summary="REST API to delete Portfolio  into APP ",
+      description = "REST API to delete  Portfolio inside  App "
+    )
+  @PreAuthorize("hasRole('ADMIN')")
+  @DeleteMapping(path="/portfoliodeletion")
+  private  ResponseEntity<ResponseDto>  portfolioDeletion(@RequestParam(required = false)  String num){
+      ResponseEntity<ResponseDto> portfoliodelete= this.portfolioService.portfoliodeletion(num);
+      log.info("birth certificate deleted  "+ portfoliodelete.getBody());
+      return portfoliodelete;
+  }
 
 }

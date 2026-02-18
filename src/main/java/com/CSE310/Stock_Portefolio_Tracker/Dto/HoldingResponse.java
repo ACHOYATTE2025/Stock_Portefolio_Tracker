@@ -14,6 +14,7 @@ import lombok.NoArgsConstructor;
 public class HoldingResponse {
     private String stockSymbol;
     private String stockName;
+    private double amount;  
     private int quantity;
     private BigDecimal currentPrice ;
 
@@ -23,6 +24,7 @@ public class HoldingResponse {
         this.stockName = name;
         this.quantity = quantity2;
         this.currentPrice = currentPrice2;
+       
 
     }
   

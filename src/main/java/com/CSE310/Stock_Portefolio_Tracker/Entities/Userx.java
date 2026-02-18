@@ -8,7 +8,8 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import com.CSE310.Stock_Portefolio_Tracker.Enum.TypeRole;
+
+
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;

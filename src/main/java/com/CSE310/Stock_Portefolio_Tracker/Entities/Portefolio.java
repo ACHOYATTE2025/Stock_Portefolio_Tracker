@@ -1,5 +1,6 @@
 package com.CSE310.Stock_Portefolio_Tracker.Entities;
 
+
 import java.util.List;
 
 import jakarta.persistence.CascadeType;
@@ -29,12 +30,19 @@ public class Portefolio {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String name_portefolio;
+    private String namePortefolio;
+
+   
 
     // Relation avec User
     @ManyToOne
     @JoinColumn(name = "user_id")
     private Userx user;
+
+    // Relation avec Wallet
+    @ManyToOne
+    @JoinColumn(name = "wallet_id")
+    private Wallet wallet;
 
     // Relation avec Holdings
     @OneToMany(mappedBy = "portfolio", cascade = CascadeType.ALL, orphanRemoval = true)

@@ -1,18 +1,18 @@
 package com.CSE310.Stock_Portefolio_Tracker.Integration.Api;
 
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestMethodOrder;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.server.LocalServerPort;
-
+import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.TestPropertySource;
 
+import com.CSE310.Stock_Portefolio_Tracker.TestSecurityConfig;
 import com.CSE310.Stock_Portefolio_Tracker.Dto.LoginRequestDto;
-import com.CSE310.Stock_Portefolio_Tracker.Dto.RefreshTokenDto;
 import com.CSE310.Stock_Portefolio_Tracker.Dto.SignupResponseDto;
+import com.CSE310.Stock_Portefolio_Tracker.ExternalApi.StockApiClient;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.equalTo;
@@ -22,19 +22,14 @@ import io.restassured.http.ContentType;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-import java.util.Map;
+
 
 
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @ActiveProfiles("test")
-@TestPropertySource(properties = {
-    "spring.datasource.url=jdbc:postgresql://localhost:5432/stockdb",
-    "spring.datasource.username=postgres",
-    "spring.datasource.password=Dreamcast1985@.@",
-    "jwt.key=qsd4qs86fqs54c8qs94d856qs4d8/s4d56qs1d89qs4dx56qs1d86qs4"
-})
+@AutoConfigureMockMvc(addFilters = false)
+@Import(TestSecurityConfig.class)
 public class AuthControllerIT {
     @LocalServerPort
     int port;
@@ -46,50 +41,49 @@ public class AuthControllerIT {
     }
 
    
+    @MockBean
+    private StockApiClient stockApiClient;
+
 
 
     @Test
-    void RegisterUser() {
+    void register_user_successfully() {
+        
+            
         given()
-            .port(port)
             .contentType(ContentType.JSON)
             .body("""
                 {
-                  "username":"tix",
-                  "email": "tox@gmail.com",
-                  "password": "1x234560x"
+                "username":"acho",
+                "email":"acho@gmail.com",
+                "password":"acho"
                 }
             """)
-            .log().all()  // ✅ Log la requête
         .when()
             .post("/register")
-           
         .then()
-            .log().all()  // ✅ Log la réponse complète avec les détails de l'erreur
             .statusCode(201)
             .body("statusMsg", equalTo("USER CREATED SUCCESSFULLY"));
-    }
+}
 
+    
 
+@Test
+void login_successfully() {
 
-    @Test
-    void should_login_successfully() {
+    LoginRequestDto request = new LoginRequestDto();
+    request.setUsername("acho@gmail.com");
+    request.setPassword("acho");
 
-        LoginRequestDto request = new LoginRequestDto();
-        request.setUsername("acho@gmail.com");
-        request.setPassword("acho");
-
-        given()
-            .contentType(ContentType.JSON)
-            .body(request)
-        .when()
-            .post("/login")
-        .then()
-            .log().all()
-            .contentType(ContentType.JSON)
-            .statusCode(200)
-            .body("token", notNullValue())
-            .body("refresh", notNullValue());
+    given()
+        .contentType(ContentType.JSON)
+        .body(request)
+    .when()
+        .post("/login")
+    .then()
+        .statusCode(200)
+        .body("token", notNullValue())
+        .body("refresh", notNullValue());
 }
 
     @Test
@@ -104,7 +98,7 @@ public class AuthControllerIT {
                 .body(request)
                 .log().all()
             .when()
-                .post("/api/stockportefoliotracker/v1/login")
+                .post("/login")
             .then()
                 .log().all()
                 .statusCode(401) // on attend 401 pour login échoué
@@ -145,4 +139,4 @@ public class AuthControllerIT {
         }
 
 
-}
+    }

@@ -17,15 +17,21 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 
 @Entity
+@RequiredArgsConstructor
+@Setter
+@Getter
 @Table(name = "transactions")
 public class Transactions {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private int quantity;
+    private int quantity=0;
 
     @Column(precision = 19, scale = 4)
     private BigDecimal price; // prix unitaire au moment de la transaction
