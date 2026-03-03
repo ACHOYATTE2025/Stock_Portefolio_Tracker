@@ -8,9 +8,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.CSE310.Stock_Portefolio_Tracker.Dto.TransactionRequest;
-import com.CSE310.Stock_Portefolio_Tracker.Entities.Transactions;
+import com.CSE310.Stock_Portefolio_Tracker.Dto.TransactionResponse;
+
 import com.CSE310.Stock_Portefolio_Tracker.Services.TransactionService;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -20,8 +22,8 @@ public class TransactionController {
     private final TransactionService transactionService;
 
     @PostMapping
-    public ResponseEntity<Transactions> createTransaction(@RequestBody TransactionRequest request,Authentication authentication) {
-        Transactions transaction = transactionService.executeTransaction(request, authentication);
+    public ResponseEntity<TransactionResponse> createTransaction(@Valid @RequestBody TransactionRequest request) {
+        TransactionResponse transaction = transactionService.executeTransaction(request);
         return ResponseEntity.ok(transaction);
     }
 

@@ -3,15 +3,19 @@ package com.CSE310.Stock_Portefolio_Tracker.Services;
 import java.math.BigDecimal;
 
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import com.CSE310.Stock_Portefolio_Tracker.Dto.GlobalQuoteResponse;
 import com.CSE310.Stock_Portefolio_Tracker.Dto.TransactionRequest;
+import com.CSE310.Stock_Portefolio_Tracker.Dto.TransactionResponse;
 import com.CSE310.Stock_Portefolio_Tracker.Entities.Holding;
 import com.CSE310.Stock_Portefolio_Tracker.Entities.Portefolio;
 import com.CSE310.Stock_Portefolio_Tracker.Entities.Stock;
 import com.CSE310.Stock_Portefolio_Tracker.Entities.Transactions;
 import com.CSE310.Stock_Portefolio_Tracker.Entities.Userx;
 import com.CSE310.Stock_Portefolio_Tracker.Enum.TransactionType;
+import com.CSE310.Stock_Portefolio_Tracker.ExternalApi.StockApiClient;
 import com.CSE310.Stock_Portefolio_Tracker.Repository.HoldingRepository;
 import com.CSE310.Stock_Portefolio_Tracker.Repository.PortefolioRepository;
 import com.CSE310.Stock_Portefolio_Tracker.Repository.StockRepository;
@@ -20,26 +24,32 @@ import com.CSE310.Stock_Portefolio_Tracker.Repository.UserxRepository;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class TransactionService {
     private final TransactionRepository transactionsRepository;
     private final HoldingRepository holdingRepository;
     private final StockRepository stockRepository;
     private final PortefolioRepository portefolioRepository;
     private final UserxRepository userxRepository;
+    private final StockApiClient stockApiClient;
 
  
 
 
     @Transactional
-    public Transactions executeTransaction(TransactionRequest request, Authentication authentication) {
+    public TransactionResponse executeTransaction(TransactionRequest request) {
 
         
+        
         // 1️⃣ Récupérer utilisateur connecté
-        String username = authentication.getName();
-        Userx user = this.userxRepository.findByUsername(username)
+        Userx userx = (Userx) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String username = userx.getUsername();
+        log.info("username:"+ username);
+        Userx user = this.userxRepository.findByEmail(username)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
         // 2️⃣ Récupérer portfolio du user
@@ -50,11 +60,17 @@ public class TransactionService {
         Stock stock = stockRepository.findBySymbol(request.getSymbol())
                 .orElseThrow(() -> new RuntimeException("Stock not found"));
 
-        // 4️⃣ Prix réel (exemple simple)
-        BigDecimal price = stock.getCurrentPrice();
-        if (price == null) {
-            throw new RuntimeException("Stock price unavailable");
-        }
+            // 4️⃣ Prix réel (exemple simple)
+                GlobalQuoteResponse response = stockApiClient.getStockPrice(stock.getSymbol());
+
+            if (response == null || response.getQuote() == null) {
+                throw new RuntimeException("Stock price unavailable from API");
+            }
+
+            BigDecimal price = new BigDecimal(response.getQuote().getPrice());
+
+
+
 
         // 5️⃣ Récupérer ou créer holding
         Holding holding = holdingRepository
@@ -100,7 +116,14 @@ public class TransactionService {
         transaction.setPrice(price);
         transaction.setType(request.getType());
 
-        return transactionsRepository.save(transaction);
+       Transactions saved = transactionsRepository.save(transaction);
+
+        return new TransactionResponse(
+                saved.getStock().getSymbol(),
+                saved.getQuantity(),
+                saved.getPrice(),
+                saved.getType().name()
+        );
 
 }
 }

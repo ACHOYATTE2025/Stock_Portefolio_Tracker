@@ -63,7 +63,7 @@ class PortefolioServiceTest {
         // Assert
         verify(portefolioRepository, times(1))
                 .save(argThat(portefolio ->
-                        portefolio.getName_portefolio().equals(portfolioName)
+                        portefolio.getNamePortefolio().equals(portfolioName)
                         && portefolio.getUser().equals(user)
                 ));
     }

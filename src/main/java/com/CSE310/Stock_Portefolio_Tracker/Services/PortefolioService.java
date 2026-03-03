@@ -56,7 +56,7 @@ public class PortefolioService {
     //Get value of stock
      public BigDecimal getCurrentValue(String symbol, int quantity) {
         GlobalQuoteResponse response = stockApiClient.getStockPrice(symbol);
-        BigDecimal price = new BigDecimal(response.getQuote().getPrice().precision());
+        BigDecimal price = new BigDecimal(response.getQuote().getPrice());
         return price.multiply(BigDecimal.valueOf(quantity));
     }
 

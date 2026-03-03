@@ -5,9 +5,11 @@ import java.time.LocalDate;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @Data
+@AllArgsConstructor
 public class GlobalQuoteResponse {
 
     @JsonProperty("Global Quote")
@@ -27,8 +29,8 @@ public class GlobalQuoteResponse {
         @JsonProperty("04. low")
         private BigDecimal low;
 
-        @JsonProperty("05. price")
-        private BigDecimal price;
+       @JsonProperty("05. price")
+        private String price;
 
         @JsonProperty("06. volume")
         private Long volume;
