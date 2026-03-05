@@ -1,5 +1,7 @@
 package com.CSE310.Stock_Portefolio_Tracker.Services;
 
+import java.math.BigDecimal;
+
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -9,9 +11,11 @@ import org.springframework.stereotype.Service;
 import com.CSE310.Stock_Portefolio_Tracker.Dto.SignupRequestDto;
 import com.CSE310.Stock_Portefolio_Tracker.Entities.Role;
 import com.CSE310.Stock_Portefolio_Tracker.Entities.Userx;
+import com.CSE310.Stock_Portefolio_Tracker.Entities.Wallet;
 import com.CSE310.Stock_Portefolio_Tracker.Enum.TypeRole;
 import com.CSE310.Stock_Portefolio_Tracker.Repository.RoleRepository;
 import com.CSE310.Stock_Portefolio_Tracker.Repository.UserxRepository;
+import com.CSE310.Stock_Portefolio_Tracker.Repository.WalletRepository;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,6 +29,7 @@ public class AuthService implements  UserDetailsService{
     private final UserxRepository userxRepository;
     private final PasswordEncoder passwordEncoder;
     private final RoleRepository roleRepository;
+    private final WalletRepository walletRepository;
 
     public void RegisterUserService(SignupRequestDto request) {
         
@@ -35,6 +40,10 @@ public class AuthService implements  UserDetailsService{
         Userx user = buildUser(request);
        
         this.userxRepository.save(user);
+        Wallet wallet = new Wallet();
+        wallet.setUserx(user);
+        wallet.setAmount(BigDecimal.ZERO);
+        walletRepository.save(wallet);
 
         log.info("User successfully created with email: {}", user.getEmail());
 

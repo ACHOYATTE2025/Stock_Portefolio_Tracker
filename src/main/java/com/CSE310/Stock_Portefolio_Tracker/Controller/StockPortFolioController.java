@@ -20,8 +20,11 @@ import org.springframework.web.bind.annotation.RestController;
 import com.CSE310.Stock_Portefolio_Tracker.Dto.GlobalQuoteResponse;
 import com.CSE310.Stock_Portefolio_Tracker.Dto.PortfolioResponse;
 import com.CSE310.Stock_Portefolio_Tracker.Dto.ResponseDto;
+import com.CSE310.Stock_Portefolio_Tracker.Dto.WalletTransactDto;
 import com.CSE310.Stock_Portefolio_Tracker.Entities.Userx;
+import com.CSE310.Stock_Portefolio_Tracker.Enum.WalletTransaction;
 import com.CSE310.Stock_Portefolio_Tracker.Services.PortefolioService;
+import com.CSE310.Stock_Portefolio_Tracker.Services.TransactionWalletService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -42,6 +45,7 @@ import lombok.extern.slf4j.Slf4j;
 public class StockPortFolioController {
 
     private final PortefolioService portfolioService;
+    private final TransactionWalletService transactionWalletService;
 
 
 
@@ -85,9 +89,9 @@ public class StockPortFolioController {
 
 
         @PostMapping("/createPortefolio")
-        public ResponseEntity<ResponseDto> createPortfolio(@RequestParam String email, @RequestParam String porteFolioName,double amount) {
+        public ResponseEntity<ResponseDto> createPortfolio(@RequestParam String email, @RequestParam String porteFolioName) {
 
-             portfolioService.createPortfolio(email,porteFolioName,amount);
+             portfolioService.createPortfolio(email,porteFolioName);
 
              return ResponseEntity
                     .status(HttpStatus.CREATED)
@@ -136,7 +140,7 @@ public class StockPortFolioController {
 
     
 
-  //suprimmer un certifcat de naissance
+  //suprimmer un portefolio
   @Operation(
       summary="REST API to delete Portfolio  into APP ",
       description = "REST API to delete  Portfolio inside  App "
@@ -148,5 +152,30 @@ public class StockPortFolioController {
       log.info("birth certificate deleted  "+ portfoliodelete.getBody());
       return portfoliodelete;
   }
+
+
+
+  
+
+    //get a portefolio by ID
+    @Operation(
+        summary="REST API to REFUND OR DROP WALLET",
+        description = "REST API to  REFUND OR DROP WALLET inside Stock portfolio App "
+      )
+      @ApiResponse(
+      responseCode="200",
+      description = "VALUE DONE"
+  )
+    @PostMapping(path="/Wallet")
+    ResponseEntity<?> useWallet(@Valid WalletTransactDto request ){
+      this.transactionWalletService.walletUses(request);
+
+      log.info("Portofolio fetch by id N° "+ request.getTransact());
+      return ResponseEntity
+                    .status(HttpStatus.CREATED)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(new ResponseDto(201,request.getTransact().toString(),"STOCK DONE"));
+    }
+
 
 }

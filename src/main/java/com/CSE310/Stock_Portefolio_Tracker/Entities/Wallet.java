@@ -13,10 +13,16 @@ import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Data
+@Getter
+@Setter
 @AllArgsConstructor
+@NoArgsConstructor
 @Table(name = "wallet")
 public class Wallet {
 
@@ -24,7 +30,7 @@ public class Wallet {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private double amount=0;
+    public BigDecimal  amount;
 
      // Relation avec User
     @OneToOne(fetch = FetchType.LAZY)

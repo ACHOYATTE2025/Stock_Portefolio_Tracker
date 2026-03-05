@@ -12,6 +12,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -41,7 +42,10 @@ public class Userx implements  UserDetails{
     private Long id;
 
     private String username;
+
+    @Column(unique = true, nullable = false)
     private String email;
+    
     private String password;
     private Boolean active =false;
 

@@ -40,16 +40,28 @@ public class PortefolioService {
 
     
      //Create a portefolio
-     public void createPortfolio(String email, String portfolioName,double amount) {
+     public void createPortfolio(String email, String portfolioName) {
 
-         Userx userx = userxRepository.findByEmail(email)
+        Userx userx = userxRepository.findByEmail(email)
                   .orElseThrow(() -> new RuntimeException("User not found"));
+        
+        
 
-        Portefolio portefolio = new Portefolio();
-        portefolio.setNamePortefolio(portfolioName);
-        portefolio.setUser(userx);
+    Optional<Portefolio> existingPortfolio =
+            portefolioRepository.findByNamePortefolioAndUser(portfolioName, userx);
 
-        this.portefolioRepository.save(portefolio);
+    if (existingPortfolio.isPresent()) {
+        throw new RuntimeException("Portfolio already exists!");
+    }
+
+    Portefolio newPortfolio = new Portefolio();
+    newPortfolio.setNamePortefolio(portfolioName);
+    newPortfolio.setUser(userx);
+
+    portefolioRepository.save(newPortfolio);   
+      
+
+       
          }
          
 
