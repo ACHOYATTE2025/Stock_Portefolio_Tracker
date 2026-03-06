@@ -34,7 +34,7 @@ public class Wallet {
 
      // Relation avec User
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
+    @JoinColumn(name = "user_id", nullable = false,unique = true)
     private Userx userx;
 
 }

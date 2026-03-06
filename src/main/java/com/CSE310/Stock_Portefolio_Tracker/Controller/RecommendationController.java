@@ -1,5 +1,6 @@
 package com.CSE310.Stock_Portefolio_Tracker.Controller;
 
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -10,6 +11,7 @@ import com.CSE310.Stock_Portefolio_Tracker.Entities.Holding;
 import com.CSE310.Stock_Portefolio_Tracker.Entities.Portefolio;
 import com.CSE310.Stock_Portefolio_Tracker.Entities.Recommendation;
 import com.CSE310.Stock_Portefolio_Tracker.Entities.Stock;
+import com.CSE310.Stock_Portefolio_Tracker.Entities.Userx;
 import com.CSE310.Stock_Portefolio_Tracker.Repository.HoldingRepository;
 import com.CSE310.Stock_Portefolio_Tracker.Repository.PortefolioRepository;
 import com.CSE310.Stock_Portefolio_Tracker.Repository.StockRepository;
@@ -30,9 +32,11 @@ public class RecommendationController {
 
    @GetMapping("/{portfolioName}/{stockSymbol}")
 public RecommendationResponse getRecommendation(@PathVariable String portfolioName,
-                                                @PathVariable String stockSymbol) {
+                                                @PathVariable String stockSymbol){
 
-    Portefolio portfolio = portefolioRepository.findByNamePortefolio(portfolioName)
+
+    Userx usex = (Userx) SecurityContextHolder.getContext().getAuthentication().getPrincipal();  
+    Portefolio portfolio = portefolioRepository.findByNamePortefolioAndUser(portfolioName,usex)
             .orElseThrow(() -> new RuntimeException("Portfolio not found"));
 
     Stock stock = stockRepository.findBySymbol(stockSymbol)
@@ -52,3 +56,5 @@ public RecommendationResponse getRecommendation(@PathVariable String portfolioNa
 }
 
 }
+
+

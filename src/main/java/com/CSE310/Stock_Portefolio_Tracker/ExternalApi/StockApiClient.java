@@ -19,6 +19,7 @@ public class StockApiClient {
         this.apiKey = apiKey;
     }
 
+    
     public GlobalQuoteResponse getStockPrice(String symbol) {
         return webClient.get()
                 .uri(uriBuilder -> uriBuilder

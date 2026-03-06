@@ -20,12 +20,12 @@ public interface PortefolioRepository extends JpaRepository<Portefolio,Long>{
         List<Portefolio> findAllByUser(Userx usex);
 
 
-      //find by num
-      Optional<Portefolio> findByNamePortefolio(String namePortefolio);
-
+          
+      
 
       //find by num et user connected
-       Optional<Portefolio> findByNamePortefolioAndUser(String namePortefolio,Userx userx);
+       
+       Optional <Portefolio> findByNamePortefolioAndUser(String namePortefolio,Userx userx);
 
 
    

@@ -2,6 +2,7 @@ package com.CSE310.Stock_Portefolio_Tracker.Services;
 
 import java.math.BigDecimal;
 
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -25,7 +26,6 @@ import com.CSE310.Stock_Portefolio_Tracker.Repository.UserxRepository;
 import com.CSE310.Stock_Portefolio_Tracker.Repository.WalletRepository;
 
 import jakarta.transaction.Transactional;
-import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -43,6 +43,7 @@ public class TransactionService {
     private final WalletRepository walletRepository;
 
     @Transactional
+    @Cacheable("stockPrice")
     public TransactionResponse executeTransaction(TransactionRequest request) {
 
         // 1️⃣ Récupérer utilisateur connecté
@@ -61,6 +62,7 @@ public class TransactionService {
                 .orElseThrow(() -> new RuntimeException("Stock not found"));
 
         // 4️⃣ Prix réel via API
+        
         GlobalQuoteResponse response = stockApiClient.getStockPrice(stock.getSymbol());
         if (response == null || response.getQuote() == null) {
             throw new RuntimeException("Stock price unavailable from API");
@@ -94,6 +96,7 @@ public class TransactionService {
 
             // Ajouter les actions au holding
             holding.setQuantity(holding.getQuantity() + request.getQuantity());
+            holding.setWallet(wallet);
             holding.setAmount(totalPrice);
             holdingRepository.save(holding);
 

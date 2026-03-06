@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cache.annotation.EnableCaching;
 
 import com.CSE310.Stock_Portefolio_Tracker.Entities.Stock;
 import com.CSE310.Stock_Portefolio_Tracker.Repository.StockRepository;
@@ -15,6 +16,7 @@ import lombok.AllArgsConstructor;
 
 @SpringBootApplication
 @AllArgsConstructor
+@EnableCaching
 public class StockPortefolioTrackerApplication   implements CommandLineRunner  {
 
 	private final StockRepository stockRepository;

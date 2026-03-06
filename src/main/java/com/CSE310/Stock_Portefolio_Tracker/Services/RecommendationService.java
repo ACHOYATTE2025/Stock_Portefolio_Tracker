@@ -20,51 +20,67 @@ public class RecommendationService {
 
     private final StockApiClient stockApiClient;
 
-  
-
     public Recommendation generateRecommendation(Holding holding) {
-        Stock stock = holding.getStock();
-        BigDecimal buyPrice = holding.getAmount(); // prix moyen ou montant investi
 
-        // Appel de l'API pour récupérer le prix actuel
-        BigDecimal currentPrice = BigDecimal.ZERO;
-        try {
-            GlobalQuoteResponse response = stockApiClient.getStockPrice(stock.getSymbol());
-            if (response != null && response.getQuote() != null && response.getQuote().getPrice() != null) {
-                currentPrice = new BigDecimal(response.getQuote().getPrice());
-            }
-        } catch (Exception e) {
-            // Log l'erreur mais on continue avec BigDecimal.ZERO pour éviter NPE
-            System.err.println("Erreur lors de la récupération du prix pour " + stock.getSymbol() + ": " + e.getMessage());
+        Stock stock = holding.getStock();
+        BigDecimal buyPrice = holding.getAmount();
+
+        GlobalQuoteResponse response = stockApiClient.getStockPrice(stock.getSymbol());
+
+        BigDecimal currentPrice = null;
+
+        if (response != null && response.getQuote() != null && response.getQuote().getPrice() != null) {
+            currentPrice = new BigDecimal(response.getQuote().getPrice());
         }
 
-        stock.setCurrentPrice(currentPrice); // optionnel, si tu veux garder la valeur dans l'entité
-
         Recommendation recommendation = new Recommendation();
+
         recommendation.setStock(stock);
+        recommendation.setBuyPrice(buyPrice);
         recommendation.setDate(LocalDateTime.now());
 
-        // si currentPrice est zéro, on ne fait pas le calcul
-        if (currentPrice.compareTo(BigDecimal.ZERO) == 0) {
-            recommendation.setAdvice("HOLD");
-            recommendation.setComment("Prix actuel indisponible");
+        if (currentPrice == null) {
+            recommendation.setAdvice("UNKNOWN");
+            recommendation.setComment("Impossible de récupérer le prix actuel");
             return recommendation;
         }
 
-        BigDecimal change = currentPrice.subtract(buyPrice)
+        recommendation.setCurrentPrice(currentPrice);
+
+        // Gain / perte
+        BigDecimal gainLoss = currentPrice.subtract(buyPrice);
+        recommendation.setGainLoss(gainLoss);
+
+        // Pourcentage
+        BigDecimal change = gainLoss
                 .divide(buyPrice, 4, RoundingMode.HALF_UP)
                 .multiply(BigDecimal.valueOf(100));
 
+        recommendation.setPercentageChange(change);
+
+        String advice;
+
         if (change.compareTo(BigDecimal.valueOf(10)) > 0) {
-            recommendation.setAdvice("SELL");
-            recommendation.setComment("Profit supérieur à 10%");
-        } else if (change.compareTo(BigDecimal.valueOf(-10)) < 0) {
-            recommendation.setAdvice("BUY");
-            recommendation.setComment("Prix bas intéressant");
-        } else {
-            recommendation.setAdvice("HOLD");
-            recommendation.setComment("Conserver l'action");
+            advice = "SELL";
+        } 
+        else if (change.compareTo(BigDecimal.valueOf(-10)) < 0) {
+            advice = "BUY";
+        } 
+        else {
+            advice = "HOLD";
         }
+
+        recommendation.setAdvice(advice);
+
+        String comment = String.format(
+                "Prix d'achat : %s$  | Prix actuel : %s$ | Variation : %s%%| Conseil : %s",
+                buyPrice,
+                currentPrice,
+                change.setScale(2, RoundingMode.HALF_UP),
+                advice
+        );
+
+        recommendation.setComment(comment);
 
         return recommendation;
     }

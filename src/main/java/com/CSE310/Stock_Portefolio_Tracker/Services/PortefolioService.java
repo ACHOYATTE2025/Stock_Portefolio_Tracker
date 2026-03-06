@@ -43,14 +43,10 @@ public class PortefolioService {
      //Create a portefolio
      public void createPortfolio( String portfolioName) {
         Userx userx =   (Userx) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-
-                    
-                
-
-            Optional<Portefolio> existingPortfolio =
+        Optional <Portefolio> existingPortfolio =
                     portefolioRepository.findByNamePortefolioAndUser(portfolioName, userx);
 
-            if (existingPortfolio.isPresent()) {
+            if (!existingPortfolio.isEmpty()) {
                 throw new RuntimeException("Portfolio already exists!");
             }
 
@@ -109,49 +105,66 @@ public class PortefolioService {
     
     //Maping to holding to HoldingResponse
     private HoldingResponse mapHoldingToDto(Holding holding) {
-        GlobalQuoteResponse quote = stockApiClient.getStockPrice(holding.getStock().getSymbol());
-        BigDecimal amountx = new BigDecimal(quote.getQuote().getPrice());
-        BigDecimal totalPrice =amountx.multiply(BigDecimal.valueOf(holding.getQuantity()));
-        holding.getStock().setCurrentPrice(amountx);
-        holding.setAmount(totalPrice);
-        
-        holding.setAmount(totalPrice);
-        return new HoldingResponse(
-                holding.getStock().getSymbol(),
-                holding.getStock().getName(),
-                holding.getAmount(),
-                holding.getQuantity(),
-                holding.getStock().getCurrentPrice()               
-        );
+          GlobalQuoteResponse quote = stockApiClient.getStockPrice(
+            holding.getStock().getSymbol()
+    );
+
+    BigDecimal currentPrice = BigDecimal.ZERO;
+
+    if (quote != null && quote.getQuote() != null && quote.getQuote().getPrice() != null) {
+
+        currentPrice = new BigDecimal(quote.getQuote().getPrice());
+
+    } else {
+
+        log.warn("Stock price not available for {}", holding.getStock().getSymbol());
+
+    }
+
+    BigDecimal totalPrice = currentPrice.multiply(BigDecimal.valueOf(holding.getQuantity()));
+
+    holding.getStock().setCurrentPrice(currentPrice);
+    holding.setAmount(totalPrice);
+    holding.getStock().setCurrentPrice(currentPrice);
+
+    return new HoldingResponse(
+            holding.getStock().getSymbol(),
+            holding.getStock().getName(),
+            holding.getAmount(),
+            holding.getQuantity(),
+            holding.getStock().getCurrentPrice()
+    );
     }
 
 
 
-    // Lire un extrait ou les extraits
-    public List<PortfolioResponse> getPortfolio(String num) {
-    
-        boolean notEmpty = Strings.isNotEmpty(num);
-        Userx usex = (Userx) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        
-        if(notEmpty)
-            { Optional<Portefolio> porto= this.portefolioRepository.findByNamePortefolio(num);
-                if(porto==null){throw new RuntimeException("PORTFOLIO DOESN'T EXIST");}
-            
-            return this.portefolioRepository.findByNamePortefolioAndUser(num,usex).stream()
-                    .map(this::mapToDto)
-                    .collect(Collectors.toList());
-            }
+    // get portfolio
+   public List<PortfolioResponse> getPortfolio(String num) {
 
+             Userx user = (Userx) SecurityContextHolder
+            .getContext()
+            .getAuthentication()
+            .getPrincipal();
 
+    if (Strings.isNotEmpty(num)) {
 
-                List<Portefolio> portolio = (List<Portefolio>) this.portefolioRepository.findAllByUser(usex);
-                if(portolio.isEmpty()){throw new RuntimeException( "NOTHING TO SHOW") ; }
-        return portolio.stream()
-                        .map(this::mapToDto)
-                        .collect(Collectors.toList());
-            
+        Portefolio portfolio = portefolioRepository
+                .findByNamePortefolioAndUser(num, user)
+                .orElseThrow(() -> new RuntimeException("PORTFOLIO DOESN'T EXIST"));
+  
+        return List.of(mapToDto(portfolio));
     }
 
+    List<Portefolio> portfolios = portefolioRepository.findAllByUser(user);
+
+    if (portfolios.isEmpty()) {
+        throw new RuntimeException("NOTHING TO SHOW");
+    }
+  
+    return portfolios.stream()
+            .map(this::mapToDto)
+            .toList();
+        }
 
 
 
@@ -173,7 +186,7 @@ public class PortefolioService {
         @Transactional
         public ResponseEntity<ResponseDto> portfoliodeletion(String num) {
             Userx usex = (Userx) SecurityContextHolder.getContext().getAuthentication().getPrincipal();  
-            Optional<Portefolio> DEXO = this.portefolioRepository.findByNamePortefolio(num);
+            Optional<Portefolio> DEXO = this.portefolioRepository.findByNamePortefolioAndUser(num,usex);
 
             if(DEXO== null){
                 throw new RuntimeException( "DELETION IMPOSSIBLE") ;

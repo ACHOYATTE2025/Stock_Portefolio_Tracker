@@ -6,10 +6,12 @@ import org.springframework.http.HttpStatus;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 
 @Data
 @AllArgsConstructor
+@Builder
 @Schema(
         name = "ErrorResponse",
         description = "Schema to hold error response information"
