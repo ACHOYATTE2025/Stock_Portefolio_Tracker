@@ -16,6 +16,7 @@ import com.CSE310.Stock_Portefolio_Tracker.Dto.ResponseDto;
 import com.CSE310.Stock_Portefolio_Tracker.Dto.TransactionRequest;
 import com.CSE310.Stock_Portefolio_Tracker.Dto.TransactionResponse;
 import com.CSE310.Stock_Portefolio_Tracker.Dto.WalletTransactDto;
+import com.CSE310.Stock_Portefolio_Tracker.Entities.Transactions;
 import com.CSE310.Stock_Portefolio_Tracker.Repository.WalletRepository;
 import com.CSE310.Stock_Portefolio_Tracker.Services.TransactionService;
 import com.CSE310.Stock_Portefolio_Tracker.Services.TransactionWalletService;

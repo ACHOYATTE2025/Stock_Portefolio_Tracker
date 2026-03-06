@@ -16,6 +16,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import com.CSE310.Stock_Portefolio_Tracker.Dto.SignupRequestDto;
 import com.CSE310.Stock_Portefolio_Tracker.Entities.Portefolio;
@@ -58,7 +59,7 @@ class PortefolioServiceTest {
                 .thenReturn(Optional.of(user));
 
         // Act
-        portefolioService.createPortfolio(email, portfolioName,amount);
+        this.portefolioService.createPortfolio(portfolioName);
 
         // Assert
         verify(portefolioRepository, times(1))
@@ -74,19 +75,20 @@ class PortefolioServiceTest {
     @Test
     void createPortfolio_userNotFound_shouldThrowException() {
 
-        // Arrange
-        String email = "inexistant@gmail.com";
+         // Arrange
+    SecurityContextHolder.clearContext();
 
-        when(userxRepository.findByEmail(email))
-                .thenReturn(Optional.empty());
+    // Act + Assert
+    assertThrows(RuntimeException.class, () ->
+            portefolioService.createPortfolio("Portfolio Test")
+    );
 
-        // Act + Assert
-        assertThrows(RuntimeException.class, () ->
-                portefolioService.createPortfolio(email, "Test",1000)
-        );
-
-        verify(portefolioRepository, never()).save(any());
+    verify(portefolioRepository, never()).save(any());
 }
+
+
+
+
 
 }
 
