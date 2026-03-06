@@ -2,7 +2,7 @@ package com.CSE310.Stock_Portefolio_Tracker.Dto;
 
 import java.math.BigDecimal;
 
-
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -11,10 +11,11 @@ import lombok.NoArgsConstructor;
 @Data
 @Getter
 @NoArgsConstructor
+@AllArgsConstructor
 public class HoldingResponse {
     private String stockSymbol;
     private String stockName;
-    private double amount;  
+    private BigDecimal amount;  
     private int quantity;
     private BigDecimal currentPrice ;
 

@@ -14,4 +14,6 @@ public interface HoldingRepository extends JpaRepository<Holding,Long>{
 
     Optional<Holding> findByPortfolioAndStock(Portefolio portfolio, Stock stock);
 
+     Optional<Holding> findByPortfolioIdAndStockId(Long portfolioId, Long stockId);
+
 }

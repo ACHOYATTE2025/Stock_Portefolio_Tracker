@@ -1,5 +1,7 @@
 package com.CSE310.Stock_Portefolio_Tracker.Services;
 
+import java.math.BigDecimal;
+
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -42,6 +44,17 @@ public class TransactionWalletService {
         }
 
         walletRepository.save(wallet);
+    }
+
+
+    //get wallet amount
+    public BigDecimal getWallet() {
+        Userx userx = (Userx) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Wallet wallet = this.walletRepository.findByUserx(userx);
+        BigDecimal amount = wallet.getAmount();
+
+        return amount;
+    
     }
 }
 

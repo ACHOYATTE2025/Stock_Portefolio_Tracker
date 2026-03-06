@@ -1,5 +1,7 @@
 package com.CSE310.Stock_Portefolio_Tracker.Entities;
 
+import java.math.BigDecimal;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -26,6 +28,8 @@ public class Holding {
     private Long id;
 
     private int quantity;
+
+    private BigDecimal amount;
 
     // Relation avec Portfolio
     @ManyToOne(fetch = FetchType.LAZY)

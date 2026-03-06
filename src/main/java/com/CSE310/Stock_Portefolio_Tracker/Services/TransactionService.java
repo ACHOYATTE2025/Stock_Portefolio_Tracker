@@ -74,6 +74,7 @@ public class TransactionService {
                     Holding newHolding = new Holding();
                     newHolding.setPortfolio(portfolio);
                     newHolding.setStock(stock);
+                    newHolding.setAmount(BigDecimal.valueOf(0.0));
                     newHolding.setQuantity(0);
                     return newHolding;
                 });
@@ -93,6 +94,7 @@ public class TransactionService {
 
             // Ajouter les actions au holding
             holding.setQuantity(holding.getQuantity() + request.getQuantity());
+            holding.setAmount(totalPrice);
             holdingRepository.save(holding);
 
         } else if (request.getType() == TransactionType.SELL) {
@@ -122,6 +124,7 @@ public class TransactionService {
         transaction.setStock(stock);
         transaction.setQuantity(request.getQuantity());
         transaction.setPrice(price);
+        transaction.setTotalCost( price.multiply(BigDecimal.valueOf(request.getQuantity())));
         transaction.setType(request.getType());
         Transactions saved = transactionsRepository.save(transaction);
 

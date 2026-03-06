@@ -35,31 +35,31 @@ public class PortefolioService {
     private final UserxRepository userxRepository;
     private final PortefolioRepository portefolioRepository;
     
+    
 
  
 
     
      //Create a portefolio
-     public void createPortfolio(String email, String portfolioName) {
+     public void createPortfolio( String portfolioName) {
+        Userx userx =   (Userx) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-        Userx userx = userxRepository.findByEmail(email)
-                  .orElseThrow(() -> new RuntimeException("User not found"));
-        
-        
+                    
+                
 
-    Optional<Portefolio> existingPortfolio =
-            portefolioRepository.findByNamePortefolioAndUser(portfolioName, userx);
+            Optional<Portefolio> existingPortfolio =
+                    portefolioRepository.findByNamePortefolioAndUser(portfolioName, userx);
 
-    if (existingPortfolio.isPresent()) {
-        throw new RuntimeException("Portfolio already exists!");
-    }
+            if (existingPortfolio.isPresent()) {
+                throw new RuntimeException("Portfolio already exists!");
+            }
 
-    Portefolio newPortfolio = new Portefolio();
-    newPortfolio.setNamePortefolio(portfolioName);
-    newPortfolio.setUser(userx);
+            Portefolio newPortfolio = new Portefolio();
+            newPortfolio.setNamePortefolio(portfolioName);
+            newPortfolio.setUser(userx);
 
-    portefolioRepository.save(newPortfolio);   
-      
+            portefolioRepository.save(newPortfolio);   
+            
 
        
          }
@@ -109,9 +109,17 @@ public class PortefolioService {
     
     //Maping to holding to HoldingResponse
     private HoldingResponse mapHoldingToDto(Holding holding) {
+        GlobalQuoteResponse quote = stockApiClient.getStockPrice(holding.getStock().getSymbol());
+        BigDecimal amountx = new BigDecimal(quote.getQuote().getPrice());
+        BigDecimal totalPrice =amountx.multiply(BigDecimal.valueOf(holding.getQuantity()));
+        holding.getStock().setCurrentPrice(amountx);
+        holding.setAmount(totalPrice);
+        
+        holding.setAmount(totalPrice);
         return new HoldingResponse(
                 holding.getStock().getSymbol(),
                 holding.getStock().getName(),
+                holding.getAmount(),
                 holding.getQuantity(),
                 holding.getStock().getCurrentPrice()               
         );

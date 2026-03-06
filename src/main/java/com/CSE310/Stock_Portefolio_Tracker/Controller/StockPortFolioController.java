@@ -8,7 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
+
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -21,8 +21,8 @@ import com.CSE310.Stock_Portefolio_Tracker.Dto.GlobalQuoteResponse;
 import com.CSE310.Stock_Portefolio_Tracker.Dto.PortfolioResponse;
 import com.CSE310.Stock_Portefolio_Tracker.Dto.ResponseDto;
 import com.CSE310.Stock_Portefolio_Tracker.Dto.WalletTransactDto;
-import com.CSE310.Stock_Portefolio_Tracker.Entities.Userx;
-import com.CSE310.Stock_Portefolio_Tracker.Enum.WalletTransaction;
+
+
 import com.CSE310.Stock_Portefolio_Tracker.Services.PortefolioService;
 import com.CSE310.Stock_Portefolio_Tracker.Services.TransactionWalletService;
 
@@ -45,7 +45,7 @@ import lombok.extern.slf4j.Slf4j;
 public class StockPortFolioController {
 
     private final PortefolioService portfolioService;
-    private final TransactionWalletService transactionWalletService;
+    
 
 
 
@@ -89,9 +89,9 @@ public class StockPortFolioController {
 
 
         @PostMapping("/createPortefolio")
-        public ResponseEntity<ResponseDto> createPortfolio(@RequestParam String email, @RequestParam String porteFolioName) {
+        public ResponseEntity<ResponseDto> createPortfolio( @RequestParam String porteFolioName) {
 
-             portfolioService.createPortfolio(email,porteFolioName);
+             portfolioService.createPortfolio(porteFolioName);
 
              return ResponseEntity
                     .status(HttpStatus.CREATED)
@@ -149,33 +149,12 @@ public class StockPortFolioController {
   @DeleteMapping(path="/portfoliodeletion")
   private  ResponseEntity<ResponseDto>  portfolioDeletion(@RequestParam(required = false)  String num){
       ResponseEntity<ResponseDto> portfoliodelete= this.portfolioService.portfoliodeletion(num);
-      log.info("birth certificate deleted  "+ portfoliodelete.getBody());
+      log.info("Portfolio deleted  "+ portfoliodelete.getBody());
       return portfoliodelete;
   }
 
 
 
-  
-
-    //get a portefolio by ID
-    @Operation(
-        summary="REST API to REFUND OR DROP WALLET",
-        description = "REST API to  REFUND OR DROP WALLET inside Stock portfolio App "
-      )
-      @ApiResponse(
-      responseCode="200",
-      description = "VALUE DONE"
-  )
-    @PostMapping(path="/Wallet")
-    ResponseEntity<?> useWallet(@Valid WalletTransactDto request ){
-      this.transactionWalletService.walletUses(request);
-
-      log.info("Portofolio fetch by id N° "+ request.getTransact());
-      return ResponseEntity
-                    .status(HttpStatus.CREATED)
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .body(new ResponseDto(201,request.getTransact().toString(),"STOCK DONE"));
-    }
 
 
 }

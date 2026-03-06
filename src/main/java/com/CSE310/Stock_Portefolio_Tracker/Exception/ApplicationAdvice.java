@@ -32,7 +32,7 @@ public ResponseEntity<ErroResponseDto> handleValidationException(
 
     ErroResponseDto errorDto = new ErroResponseDto(
             request.getDescription(false),
-            HttpStatus.BAD_REQUEST,
+            HttpStatus.NOT_FOUND,
             message,
             LocalDateTime.now()
     );

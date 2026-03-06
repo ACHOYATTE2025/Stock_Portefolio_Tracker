@@ -7,6 +7,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.Getter;
 
 @Data
 @AllArgsConstructor
@@ -16,6 +17,7 @@ public class GlobalQuoteResponse {
     private Quote quote;
 
     @Data
+    @Getter
     public static class Quote {
         @JsonProperty("01. symbol")
         private String symbol;
