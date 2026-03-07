@@ -1,9 +1,11 @@
 package com.CSE310.Stock_Portefolio_Tracker.Services;
 
 import java.math.BigDecimal;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.security.core.Authentication;
+
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -54,7 +56,9 @@ public class TransactionService {
         }
 
         // 2️⃣ Récupérer portfolio du user
-        Portefolio portfolio = portefolioRepository.findByUser(userx)
+        // Par celle-ci
+        Portefolio portfolio = portefolioRepository
+                .findByNamePortefolioAndUser(request.getPorteFolioName(), userx)
                 .orElseThrow(() -> new RuntimeException("Portfolio not found"));
 
         // 3️⃣ Récupérer stock via SYMBOL
@@ -138,4 +142,26 @@ public class TransactionService {
                 saved.getType().name()
         );
     }
+
+
+
+
+    //get transactions
+    public List<TransactionResponse> getTransactionsByUser() {
+        Userx userx = (Userx) SecurityContextHolder.getContext()
+                            .getAuthentication().getPrincipal();
+
+        // Si plusieurs portfolios par user, récupérez tous
+        List<Portefolio> portfolios = portefolioRepository.findAllByUser(userx);
+
+        return portfolios.stream()
+            .flatMap(portfolio -> transactionsRepository.findByPortfolio(portfolio).stream())
+            .map(tx -> new TransactionResponse(
+                tx.getStock().getSymbol(),
+                tx.getQuantity(),
+                tx.getPrice(),
+                tx.getType().name()
+            ))
+            .collect(Collectors.toList());
+        }
 }

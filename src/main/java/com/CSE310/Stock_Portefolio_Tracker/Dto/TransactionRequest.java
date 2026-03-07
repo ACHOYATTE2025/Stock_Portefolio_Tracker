@@ -14,6 +14,7 @@ import lombok.Setter;
 @NoArgsConstructor
 public class TransactionRequest {
 
+    private String porteFolioName;
     private String symbol;     // ex: "AAPL"
     private int quantity;
     private TransactionType type; // BUY ou SELL

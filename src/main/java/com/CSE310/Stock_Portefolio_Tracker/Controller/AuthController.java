@@ -7,6 +7,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -29,12 +30,14 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Tag(
   name = "Stock Tracker Authentification",
   description="AUTHENTIFICATION REST Api in Stock tracker management APP to CREATE  details"
 )
 @RequiredArgsConstructor
+@Slf4j
 @RestController
 public class AuthController {
     
@@ -93,11 +96,13 @@ private final JwtService jwtService;
   )
 @PostMapping("/login")
  public ResponseEntity<?> login( @RequestBody LoginRequestDto request) {
+    log.info("Email reçu: " + request.getEmail());
+    log.info("Password reçu: " + request.getPassword());
 
          try {
               Authentication authentication = authenticationManager.authenticate(
                   new UsernamePasswordAuthenticationToken(
-                      request.getUsername(),
+                      request.getEmail(),
                       request.getPassword()
                   )
         );

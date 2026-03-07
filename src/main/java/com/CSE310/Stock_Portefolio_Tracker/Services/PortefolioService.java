@@ -1,10 +1,9 @@
 package com.CSE310.Stock_Portefolio_Tracker.Services;
 
 import java.math.BigDecimal;
-import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
+
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,9 +17,11 @@ import com.CSE310.Stock_Portefolio_Tracker.Dto.ResponseDto;
 import com.CSE310.Stock_Portefolio_Tracker.Entities.Holding;
 import com.CSE310.Stock_Portefolio_Tracker.Entities.Portefolio;
 import com.CSE310.Stock_Portefolio_Tracker.Entities.Userx;
+import com.CSE310.Stock_Portefolio_Tracker.Entities.Wallet;
 import com.CSE310.Stock_Portefolio_Tracker.ExternalApi.StockApiClient;
 import com.CSE310.Stock_Portefolio_Tracker.Repository.PortefolioRepository;
 import com.CSE310.Stock_Portefolio_Tracker.Repository.UserxRepository;
+import com.CSE310.Stock_Portefolio_Tracker.Repository.WalletRepository;
 
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
@@ -34,6 +35,7 @@ public class PortefolioService {
     private final StockApiClient stockApiClient;
     private final UserxRepository userxRepository;
     private final PortefolioRepository portefolioRepository;
+    private final WalletRepository walletRepository;
     
     
 
@@ -50,9 +52,13 @@ public class PortefolioService {
                 throw new RuntimeException("Portfolio already exists!");
             }
 
+            Wallet wallet = this.walletRepository.findByUserx(userx);
+            if(wallet.equals(null)){throw new RuntimeException("WALLET Doesn't exit !!!");}
+
             Portefolio newPortfolio = new Portefolio();
             newPortfolio.setNamePortefolio(portfolioName);
             newPortfolio.setUser(userx);
+            newPortfolio.setWallet(wallet);
 
             portefolioRepository.save(newPortfolio);   
             

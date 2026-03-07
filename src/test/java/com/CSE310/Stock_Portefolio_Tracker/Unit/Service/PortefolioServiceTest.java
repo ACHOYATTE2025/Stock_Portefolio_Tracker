@@ -14,12 +14,12 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
+
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.core.context.SecurityContextHolder;
 
-import com.CSE310.Stock_Portefolio_Tracker.Dto.SignupRequestDto;
-import com.CSE310.Stock_Portefolio_Tracker.Entities.Portefolio;
+
+
 import com.CSE310.Stock_Portefolio_Tracker.Entities.Userx;
 import com.CSE310.Stock_Portefolio_Tracker.ExternalApi.StockApiClient;
 import com.CSE310.Stock_Portefolio_Tracker.Repository.PortefolioRepository;

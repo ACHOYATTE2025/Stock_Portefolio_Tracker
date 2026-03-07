@@ -52,6 +52,9 @@ public class JwtAuthentificationFilter extends  OncePerRequestFilter{
 
                 Claims claims = jwtService.extractAllClaims(token);
                 String email = claims.getSubject();
+                            // 👇 Et ceci
+                log.info("EMAIL EXTRAIT : {}", claims.getSubject());
+                log.info("EXPIRATION : {}", claims.getExpiration());
 
                 UserDetails userDetails =
                         authService.loadUserByUsername(email);
@@ -67,6 +70,7 @@ public class JwtAuthentificationFilter extends  OncePerRequestFilter{
                         new WebAuthenticationDetailsSource()
                                 .buildDetails(request)
                 );
+                
 
                 SecurityContextHolder.getContext().setAuthentication(auth);
 
