@@ -43,6 +43,8 @@ public class Transactions {
 
     private BigDecimal totalCost ;
 
+   
+
     // Relation avec Stock
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "stock_id", nullable = false)

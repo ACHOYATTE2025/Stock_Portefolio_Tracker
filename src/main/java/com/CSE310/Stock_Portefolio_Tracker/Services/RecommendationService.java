@@ -23,7 +23,7 @@ public class RecommendationService {
     public Recommendation generateRecommendation(Holding holding) {
 
         Stock stock = holding.getStock();
-        BigDecimal buyPrice = holding.getAmount();
+        BigDecimal buyPrice = holding.getBuyPrice();
 
         GlobalQuoteResponse response = stockApiClient.getStockPrice(stock.getSymbol());
 

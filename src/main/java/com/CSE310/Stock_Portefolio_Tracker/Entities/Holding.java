@@ -31,6 +31,8 @@ public class Holding {
 
     private BigDecimal amount;
 
+    private BigDecimal buyPrice;
+
     // Relation avec Portfolio
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "portfolio_id", nullable = false)

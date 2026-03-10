@@ -102,6 +102,7 @@ public class TransactionService {
             holding.setQuantity(holding.getQuantity() + request.getQuantity());
             holding.setWallet(wallet);
             holding.setAmount(totalPrice);
+            holding.setBuyPrice(price);
             holdingRepository.save(holding);
 
         } else if (request.getType() == TransactionType.SELL) {
