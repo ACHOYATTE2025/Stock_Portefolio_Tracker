@@ -120,8 +120,8 @@ Create a `.env` file at the root:
 
 ```env
 POSTGRES_DB=stockdb
-POSTGRES_USER=postgres
-POSTGRES_PASSWORD=your_password
+DB_USER=postgres
+DB_PASS=your_password
 JWT_KEY=your_jwt_secret
 MAIL_USER=your_email
 MAIL_PASS=your_email_password
